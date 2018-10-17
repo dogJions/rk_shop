@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	
+	<context:component-scan base-package="com.fym"/>
+	
+
+	<!-- 数据源 -->
+	<bean class="com.alibaba.druid.pool.DruidDataSource"
+		id="dataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/rk_shop?characterEncoding=UTF-8&amp;useSSL=false"></property>
+		<property name="username" value="root" />
+		<property name="password" value="1234" />
+		<!-- 连接对象初始化值 -->
+		<property name="initialSize" value="100" />
+		<!-- 连接对象最大值 -->
+		<property name="maxActive" value="200" />
+	</bean>
+
+	<!-- 初始化SqlsessionFactry -->
+	<bean id="SqlSessionFactory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 设置别名 -->
+		<property name="typeAliasesPackage" value="com.fym.entity" />
+		<!-- 设置分页插件 -->
+		<property name="plugins">
+			<list>
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<property name="properties">
+						<value>offsetAsPageNum=false</value>
+					</property>
+				</bean>
+			</list>
+		</property>
+		
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	</bean>
+	
+	<!-- mybatis自动设置映射文件 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 自动扫描映射接口 -->
+		<property name="basePackage" value="com.fym.dao"/>
+		<!-- 使用SqlSessionFactry -->
+		<property name="sqlSessionFactoryBeanName" value="SqlSessionFactory"/>
+	</bean>
+	
+	   <!-- 创建事务管理对象 -->
+  <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+     <property name="dataSource" ref="dataSource"/>
+  </bean>
+  
+  <!-- 注解事务开启
+  <tx:annotation-driven transaction-manager="txManager"/>
+   -->
+   
+   <!-- 自动匹配事物 -->
+   <tx:advice id="txAdive" transaction-manager="txManager">
+   		<tx:attributes>
+   				<tx:method name="save*" propagation="REQUIRED" read-only="false"/>
+		        <tx:method name="insert*" propagation="REQUIRED" read-only="false"/>
+		        <tx:method name="update*" propagation="REQUIRED" read-only="false"/>
+		        <tx:method name="delete*"  propagation="REQUIRED" read-only="false"/>
+		        <tx:method name="midfy*" propagation="REQUIRED" read-only="false"/>
+		        <tx:method name="*" propagation="SUPPORTS" read-only="true"/>
+   		</tx:attributes>	
+   </tx:advice>
+   
+   <!-- 拦截器 -->
+   <aop:config>
+   		<aop:pointcut expression="execution(* com.fym.service.imp.*.*(..))" id="point"/>
+   		
+   		<!-- 事物+拦截器 组装 -->
+   		<aop:advisor advice-ref="txAdive" pointcut-ref="point"/>
+   </aop:config>
+   
+   
+</beans>

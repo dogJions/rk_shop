@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "mybatis" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+<!-- 开启mybatis缓存 -->
+	<settings>
+		<setting name="cacheEnabled" value="false" />
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings>
+	
+	
+	
+	
+</configuration>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<!-- 自动扫描  servlet所在的包 -->
+	<context:component-scan base-package="com.fym.controller"></context:component-scan>
+	<!-- 开启SprigMVC注解 -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+	
+	 <!-- 开启spring视图解决方案 -->
+	 <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	 	<!-- 视图所在的路径  建议放web-INF下-->
+	 	<property name="prefix" value="/WEB-INF/HomePage/"></property>
+	 	<property name="suffix" value=".jsp"></property>
+	 	
+	<!--  	<property name="viewClass" value=""></property>  --> 
+	 </bean>
+	 
+	 	<mvc:resources location="/public/" mapping="/public/**"></mvc:resources>
+	 	<mvc:resources location="/upload/" mapping="/upload/**"></mvc:resources>
+	 	
+	 	
+	<!-- 开启commons-upload 支持 -->
+	<bean
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		id="multipartResolver">
+		<!-- 设置上传编码格式 -->
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<!-- 设置最大上传大小，计算单位byte作为单元,5M，1024*1024*5 -->
+		<property name="maxUploadSize" value="5242880"></property>
+	</bean>
+</beans>
